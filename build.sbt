@@ -40,7 +40,7 @@ def commonSettings: Seq[Setting[_]] = Seq(
   previousArtifact := None, // Some(organization.value %% moduleName.value % "1.0.0"),
   publishArtifact in Test := false,
   commands += publishBridgesAndTest
-)
+) ++ MS.settings
 
 def minimalSettings: Seq[Setting[_]] = commonSettings
 
@@ -348,4 +348,3 @@ def customCommands: Seq[Setting[_]] = Seq(
     state
   }
 )
-

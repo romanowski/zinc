@@ -1,0 +1,25 @@
+#
+# intellij-scala-plugin build definition for Train
+#
+language: scala
+
+tools: [yam/sbt/0.13.9, msjava/oraclejdk/1.8.0_74]
+
+run_scripts:
+    - run_scripts: &ci_setup
+        - script: |
+                  export MSBT_ALLOW_HTTP_PROXY=1
+                  export https_proxy="http://wwwproxy.ms.com:8080/"
+                  export http_proxy="http://wwwproxy.ms.com:8080/"
+
+build_types:
+    - build_type:
+        name: release
+        before_build: *ci_setup
+        build: sbt clean trainRelease
+
+test_types:
+    - test_type:
+        name: unit
+        before_test: *ci_setup
+        test: sbt test
