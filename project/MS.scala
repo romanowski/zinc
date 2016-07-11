@@ -10,7 +10,7 @@ object MS {
 
     val ouputDir = (Keys.`package` in Compile).value / ".."
     publishLocal.value // Just create all nice thigs
-    val distName = artifact.value.name
+    val distName = artifact.value.name + "_2.11"
     val output = file("..") / "install" / "common" / distName
     val trainVersion = "ms"
     val currentVersion = version.value
@@ -21,6 +21,8 @@ object MS {
         val fixedName = file.getName //.replace(currentVersion, trainVersion)
         IO.copyFile(file, output / fixedName)
     }
+
+    streams.value.log.success(s"Projetc $distName copied to ${output.getCanonicalPath}")
 
     output
   }
