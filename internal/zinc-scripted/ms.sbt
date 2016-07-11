@@ -1,0 +1,1 @@
+(sources in Test) := Nil //Just ignore tests
