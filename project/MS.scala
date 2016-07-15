@@ -3,7 +3,7 @@ import sbt.Keys._
 
 object MS {
   def settings: Seq[Setting[_]] = {
-    Seq(version := "1.0.0-M5ms", trainRelease)
+    Seq(version := "1.0.0-M5ms-SNAPSHOT", trainRelease)
   }
 
   def trainRelease = TaskKey[File]("trainRelease") := {
