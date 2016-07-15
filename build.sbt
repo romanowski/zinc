@@ -2,11 +2,12 @@
 import Util._
 import Dependencies._
 import Scripted._
+
 // import StringUtilities.normalize
 import com.typesafe.tools.mima.core._, ProblemFilters._
 
 def baseVersion = "1.0.0-X1"
-def internalPath   = file("internal")
+def internalPath = file("internal")
 
 lazy val scalaVersions = Seq(scala210, scala211)
 
@@ -67,14 +68,14 @@ def altPublishSettings: Seq[Setting[_]] = Seq(
     val ivy = new IvySbt((ivyConfiguration.value))
 
     val module =
-        new ivy.Module(moduleSettings)
+      new ivy.Module(moduleSettings)
     val newConfig =
-       new PublishConfiguration(
-           config.ivyFile,
-           altLocalRepoName,
-           config.artifacts,
-           config.checksums,
-           config.logging)
+      new PublishConfiguration(
+        config.ivyFile,
+        altLocalRepoName,
+        config.artifacts,
+        config.checksums,
+        config.logging)
     streams.value.log.info("Publishing " + module + " to local repo: " + altLocalRepoName)
     IvyActions.publish(module, newConfig, streams.value.log)
   })
@@ -82,19 +83,19 @@ def altPublishSettings: Seq[Setting[_]] = Seq(
 lazy val zincRoot: Project = (project in file(".")).
   // configs(Sxr.sxrConf).
   aggregate(
-    zinc,
-    zincTesting,
-    zincPersist,
-    zincCore,
-    zincIvyIntegration,
-    zincCompile,
-    zincCompileCore,
-    compilerInterface,
-    compilerBridge,
-    zincApiInfo,
-    zincClasspath,
-    zincClassfile,
-    zincScripted).
+  zinc,
+  zincTesting,
+  zincPersist,
+  zincCore,
+  zincIvyIntegration,
+  zincCompile,
+  zincCompileCore,
+  compilerInterface,
+  compilerBridge,
+  zincApiInfo,
+  zincClasspath,
+  zincClassfile,
+  zincScripted).
   settings(
     inThisBuild(Seq(
       git.baseVersion := baseVersion,
@@ -231,13 +232,13 @@ lazy val compilerBridge: Project = (project in internalPath / "compiler-bridge")
     scalaSource in Compile := {
       scalaVersion.value match {
         case v if v startsWith "2.11" => baseDirectory.value / "src" / "main" / "scala"
-        case _                        => baseDirectory.value / "src-2.10" / "main" / "scala"
+        case _ => baseDirectory.value / "src-2.10" / "main" / "scala"
       }
     },
     scalacOptions := {
       scalaVersion.value match {
         case v if v startsWith "2.11" => scalacOptions.value
-        case _                        => scalacOptions.value filterNot (Set("-Xfatal-warnings", "-deprecation") contains _)
+        case _ => scalacOptions.value filterNot (Set("-Xfatal-warnings", "-deprecation") contains _)
       }
     },
     altPublishSettings
@@ -278,12 +279,12 @@ lazy val zincScripted = (project in internalPath / "zinc-scripted").
   settings(
     minimalSettings,
     name := "zinc Scripted",
-    publish := (),
-    publishLocal := (),
+    publish :=(),
+    publishLocal :=(),
     libraryDependencies += utilScripted % "test"
   )
 
-lazy val publishBridgesAndTest = Command.args("publishBridgesAndTest", "<version>") { (state, args) =>
+lazy val publishBridgesAndTest = Command.args("publishBridgesAndTest", "<version>") {(state, args) =>
   val version = args mkString ""
   val compilerInterfaceID = compilerInterface.id
   val compilerBridgeID = compilerBridge.id
@@ -316,17 +317,18 @@ def scriptedTask: Def.Initialize[InputTask[Unit]] = Def.inputTask {
 def addSbtAlternateResolver(scriptedRoot: File) = {
   val resolver = scriptedRoot / "project" / "AddResolverPlugin.scala"
   if (!resolver.exists) {
-    IO.write(resolver, s"""import sbt._
-                          |import Keys._
-                          |
+    IO.write(resolver,
+      s"""import sbt._
+          |import Keys._
+          |
                           |object AddResolverPlugin extends AutoPlugin {
-                          |  override def requires = sbt.plugins.JvmPlugin
-                          |  override def trigger = allRequirements
-                          |
+          |  override def requires = sbt.plugins.JvmPlugin
+          |  override def trigger = allRequirements
+          |
                           |  override lazy val projectSettings = Seq(resolvers += alternativeLocalResolver)
-                          |  lazy val alternativeLocalResolver = Resolver.file("$altLocalRepoName", file("$altLocalRepoPath"))(Resolver.ivyStylePatterns)
-                          |}
-                          |""".stripMargin)
+          |  lazy val alternativeLocalResolver = Resolver.file("$altLocalRepoName", file("$altLocalRepoPath"))(Resolver.ivyStylePatterns)
+          |}
+          |""".stripMargin)
   }
 }
 
@@ -340,12 +342,11 @@ lazy val publishAll = TaskKey[Unit]("publish-all")
 lazy val publishLauncher = TaskKey[Unit]("publish-launcher")
 
 def customCommands: Seq[Setting[_]] = Seq(
-  commands += Command.command("release") { state =>
+  commands += Command.command("release") {state =>
     "clean" :: // This is required since version number is generated in properties file.
-    "so compile" ::
-    "so publishSigned" ::
-    "reload" ::
-    state
+      "so compile" ::
+      "so publishSigned" ::
+      "reload" ::
+      state
   }
 )
-

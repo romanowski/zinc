@@ -15,7 +15,7 @@
 					"type": "String"
 				},
 				{
-					"name": "api",
+					"name": "apiForLogging",
 					"type": "Companions"
 				},
 				{
