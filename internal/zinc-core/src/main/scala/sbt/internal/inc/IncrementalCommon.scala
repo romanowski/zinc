@@ -102,7 +102,7 @@ private[inc] abstract class IncrementalCommon(log: sbt.util.Logger, options: Inc
           val src = apiChange.modifiedClass
           val oldApi = oldAPIMapping(src)
           val newApi = newAPIMapping(src)
-          val apiUnifiedPatch = apiDiff.generateApiDiff(src.toString, oldApi.api, newApi.api, contextSize)
+          val apiUnifiedPatch = apiDiff.generateApiDiff(src.toString, oldApi.apiForLogging(), newApi.apiForLogging(), contextSize)
           wrappedLog.debug(s"Detected a change in a public API ($src):\n$apiUnifiedPatch")
       }
     } catch {

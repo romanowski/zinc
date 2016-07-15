@@ -116,7 +116,7 @@ final class IncHandler(directory: File, scriptedLog: Logger) extends BridgeProvi
       val analysis = compile(i)
       analysis.apis.internal foreach {
         case (_, api) =>
-          assert(xsbt.api.SameAPI(api.api, api.api))
+        // assert(xsbt.api.SameAPI(api.api, api.api))
       }
     }
 
@@ -253,7 +253,9 @@ final class IncHandler(directory: File, scriptedLog: Logger) extends BridgeProvi
   private def discoverMainClasses(analysis: inc.Analysis): Seq[String] = {
     def companionsApis(c: xsbti.api.Companions): Seq[xsbti.api.ClassLike] =
       Seq(c.classApi, c.objectApi)
-    val allDefs = analysis.apis.internal.values.flatMap(x => companionsApis(x.api)).toSeq
+
+    val allDefs = Nil //TODO add information to Analizes class about main method
+    //analysis.apis.internal.values.flatMap(x => companionsApis(x.api)).toSeq
     Discovery.applications(allDefs).collect({ case (definition, discovered) if discovered.hasMain => definition.name }).sorted
   }
 
@@ -289,5 +291,4 @@ final class IncHandler(directory: File, scriptedLog: Logger) extends BridgeProvi
       IncOptionsUtil.fromStringMap(map)
     } else IncOptionsUtil.defaultIncOptions
   }
-
 }
