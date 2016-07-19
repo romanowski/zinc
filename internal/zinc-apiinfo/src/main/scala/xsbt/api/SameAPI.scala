@@ -10,10 +10,9 @@ import scala.collection.{ immutable, mutable }
 
 /** Checks the API of two source files for equality.*/
 object SameAPI {
-  def checkNameHashes(a: AnalyzedClass, b: AnalyzedClass): Boolean = false
 
   def apply(a: AnalyzedClass, b: AnalyzedClass): Boolean =
-    (a.apiHash == b.apiHash) && checkNameHashes(a, b)
+    (a.apiHash == b.apiHash)
 
   def apply(a: Definition, b: Definition): Boolean =
     (new SameAPI(false, true)).sameDefinitions(List(a), List(b), true)

@@ -30,7 +30,7 @@ class IncrementalCompilerImpl extends IncrementalCompiler {
       import setup._
       val javacChosen = in.compilers.javaTools.javac
       val scalac = in.compilers.scalac
-      incrementalCompile(scalac, javacChosen, sources, classpath, CompileOutput(classesDirectory), cache, None, scalacOptions, javacOptions,
+      incrementalCompile(scalac, javacChosen, sources, classpath, CompileOutput(classesDirectory), cache, Option(compileProgress), scalacOptions, javacOptions,
         m2o(in.previousResult.analysis),
         m2o(in.previousResult.setup),
         perClasspathEntryLookup,
@@ -159,7 +159,7 @@ class IncrementalCompilerImpl extends IncrementalCompiler {
 
   def setup(perClasspathEntryLookup: PerClasspathEntryLookup, skip: Boolean, cacheFile: File, cache: GlobalsCache,
     incrementalCompilerOptions: IncOptions, reporter: Reporter, extra: Array[T2[String, String]]): Setup =
-    new Setup(perClasspathEntryLookup, skip, cacheFile, cache, incrementalCompilerOptions, reporter, extra)
+    new Setup(perClasspathEntryLookup, null, skip, cacheFile, cache, incrementalCompilerOptions, reporter, extra)
   def inputs(options: CompileOptions, compilers: Compilers, setup: Setup, pr: PreviousResult): Inputs =
     new Inputs(compilers, options, setup, pr)
   def inputs(classpath: Array[File], sources: Array[File], classesDirectory: File, scalacOptions: Array[String],

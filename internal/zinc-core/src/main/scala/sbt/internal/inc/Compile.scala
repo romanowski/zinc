@@ -268,7 +268,8 @@ private final class AnalysisCallback(
     val hasMacro: Boolean = macroClasses.contains(name)
     val (companions, apiHash) = companionsWithHash(name)
     val nameHashes = nameHashesForCompanions(name)
-    val ac = new AnalyzedClass(compilation, name, companions, apiHash, nameHashes, hasMacro)
+    val packageObject = companions.objectApi.definitionType == DefinitionType.PackageModule
+    val ac = new AnalyzedClass(compilation, name, apiHash, nameHashes, hasMacro, packageObject, false) //TODO Implemet this!
     ac
   }
 

@@ -26,12 +26,14 @@ private final class IncrementalNameHashing(log: sbt.util.Logger, options: IncOpt
   }
 
   override protected def sameAPI(className: String, a: AnalyzedClass, b: AnalyzedClass): Option[APIChange] = {
-    if (SameAPI(a, b))
+    val sameHashes = a.apiHash() == b.apiHash()
+    val aNameHashes = a.nameHashes
+    val bNameHashes = b.nameHashes
+    val modifiedNames = ModifiedNames.compareTwoNameHashes(aNameHashes, bNameHashes)
+
+    if (sameHashes && modifiedNames.empty)
       None
     else {
-      val aNameHashes = a.nameHashes
-      val bNameHashes = b.nameHashes
-      val modifiedNames = ModifiedNames.compareTwoNameHashes(aNameHashes, bNameHashes)
       val apiChange = NamesChange(className, modifiedNames)
       Some(apiChange)
     }

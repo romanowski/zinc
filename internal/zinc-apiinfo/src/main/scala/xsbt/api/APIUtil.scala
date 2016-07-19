@@ -17,8 +17,7 @@ object APIUtil {
 
   def isScalaSourceName(name: String): Boolean = name.endsWith(".scala")
 
-  def hasPackageObject(analyzedClass: AnalyzedClass): Boolean = false //TODO add basic class stats here
-  // analyzedClass.api.objectApi.definitionType == DefinitionType.PackageModule
+  def hasPackageObject(analyzedClass: AnalyzedClass): Boolean = analyzedClass.hasPackageObject
 
   def hasMacro(c: ClassLike): Boolean =
     {

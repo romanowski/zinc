@@ -47,8 +47,8 @@ object APIs {
   val emptyCompilation = new xsbti.api.Compilation(-1, Array())
   val emptyNameHashes = new xsbti.api.NameHashes(Array.empty, Array.empty)
   val emptyCompanions = new xsbti.api.Companions(emptyAPI, emptyAPI)
-  val emptyAnalyzedClass = new xsbti.api.AnalyzedClass(emptyCompilation, emptyName, emptyCompanions, emptyAPIHash,
-    emptyNameHashes, false)
+  val emptyAnalyzedClass = new xsbti.api.AnalyzedClass(emptyCompilation, emptyName, emptyAPIHash,
+    emptyNameHashes, false, false, false)
   def getAPI[T](map: Map[T, AnalyzedClass], className: T): AnalyzedClass = map.getOrElse(className, emptyAnalyzedClass)
 }
 

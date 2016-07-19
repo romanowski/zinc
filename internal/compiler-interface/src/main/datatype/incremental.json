@@ -29,7 +29,6 @@
             }
           ]
         }
-
       ]
     },
     {
@@ -324,6 +323,13 @@
           "type": "xsbti.compile.PerClasspathEntryLookup",
           "doc": [
             "Provides a lookup of data structures and operations associated with a single classpath entry."
+          ]
+        },
+        {
+          "name": "compileProgress",
+          "type": "xsbti.compile.CompileProgress",
+          "doc": [
+            "Progress tracker for compilation."
           ]
         },
         {

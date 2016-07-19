@@ -104,7 +104,8 @@ class TestAnalysisCallback(
     val hasMacro: Boolean = macroClasses.contains(name)
     val (companions, apiHash) = companionsWithHash(name)
     val nameHashes = nameHashesForCompanions(name)
-    val ac = new AnalyzedClass(compilation, name, companions, apiHash, nameHashes, hasMacro)
+    val hasPackageObject = companions.objectApi.definitionType == DefinitionType.PackageModule //TODO add main classes here
+    val ac = new AnalyzedClass(compilation, name, apiHash, nameHashes, hasMacro, hasPackageObject, false)
     ac
   }
 

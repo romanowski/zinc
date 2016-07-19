@@ -45,6 +45,8 @@ final case class NamesChange(modified0: String, modifiedNames: ModifiedNames) ex
 final case class ModifiedNames(regularNames: Set[String], implicitNames: Set[String]) {
   override def toString: String =
     s"ModifiedNames(regularNames = ${regularNames mkString ", "}, implicitNames = ${implicitNames mkString ", "})"
+
+  def empty = regularNames.isEmpty && implicitNames.isEmpty
 }
 object ModifiedNames {
   def compareTwoNameHashes(a: NameHashes, b: NameHashes): ModifiedNames = {

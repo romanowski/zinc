@@ -102,7 +102,7 @@ private[inc] abstract class IncrementalCommon(log: sbt.util.Logger, options: Inc
           val src = apiChange.modifiedClass
           val oldApi = oldAPIMapping(src)
           val newApi = newAPIMapping(src)
-          val apiUnifiedPatch = apiDiff.generateApiDiff(src.toString, oldApi.apiForLogging(), newApi.apiForLogging(), contextSize)
+          val apiUnifiedPatch = "No API to find Diff"
           wrappedLog.debug(s"Detected a change in a public API ($src):\n$apiUnifiedPatch")
       }
     } catch {
@@ -166,7 +166,7 @@ private[inc] abstract class IncrementalCommon(log: sbt.util.Logger, options: Inc
 
       val srcChanges = changes(previous.allInternalSources.toSet, sources, f => !equivS.equiv(previous.internalSource(f), current.internalSource(f)))
       val removedProducts = previous.allProducts.filter(p => !equivS.equiv(previous.product(p), current.product(p))).toSet
-      val binaryDepChanges = previous.allBinaries.filter(externalBinaryModified(lookup, previous, current)).toSet
+      val binaryDepChanges =  previous.allBinaries.filter(externalBinaryModified(lookup, previous, current)).toSet
       val extChanges = changedIncremental(previousAPIs.allExternals, previousAPIs.externalAPI _, currentExternalAPI(lookup))
 
       InitialChanges(srcChanges, removedProducts, binaryDepChanges, extChanges)
