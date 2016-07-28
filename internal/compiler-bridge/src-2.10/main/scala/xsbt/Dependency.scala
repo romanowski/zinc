@@ -67,11 +67,12 @@ final class Dependency(val global: CallbackGlobal) extends LocateClassFile with 
                 processDependency(context = DependencyByMemberRef)(ClassDependency(firstClassSymbol, dep))
               }
             case None =>
-              reporter.warning(
+              reporter.info(
                 unit.position(0),
                 """|Found top level imports but no class, trait or object is defined in the compilation unit.
                   |The incremental compiler cannot record the dependency information in such case.
-                  |Some errors like unused import referring to a non-existent class might not be reported.""".stripMargin
+                  |Some errors like unused import referring to a non-existent class might not be reported.""".stripMargin,
+                true
               )
           }
         }
