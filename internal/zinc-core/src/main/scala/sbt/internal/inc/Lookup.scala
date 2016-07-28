@@ -14,7 +14,7 @@ import xsbti.compile.CompileAnalysis
  * variant can be implemented without an expensive classpath lookup.
  * See https://github.com/sbt/sbt/issues/2525
  */
-trait Lookup {
+trait Lookup extends ExternalLookup {
   /**
    * Lookup an element on the classpath corresponding to a given binary class name.
    * If found class file is stored in a jar file, the jar file is returned.
@@ -46,4 +46,30 @@ trait Lookup {
    * @return
    */
   def lookupAnalysis(binaryClassName: String): Option[CompileAnalysis]
+}
+
+trait ExternalLookup {
+  /**
+   * Method use to provide information from external tools into sbt (e.g. IDEs)
+   *
+   * @param previousAnalysis
+   * @return None if is unable to determine what was changed, changes elsewere
+   */
+  def changedSources(previousAnalysis: Analysis): Option[Changes[File]]
+
+  /**
+   * Method use to provide information from external tools into sbt (e.g. IDEs)
+   *
+   * @param previousAnalysis
+   * @return None if is unable to determine what was changed, changes elsewere
+   */
+  def changedBinaries(previousAnalysis: Analysis): Option[Set[File]]
+
+  /**
+   * Method use to provide information from external tools into sbt (e.g. IDEs)
+   *
+   * @param previousAnalysis
+   * @return None if is unable to determine what was changed, changes elsewere
+   */
+  def removedProducts(previousAnalysis: Analysis): Option[Set[File]]
 }
