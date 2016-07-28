@@ -6,6 +6,8 @@ import xsbti.compile.IncOptions
 import xsbti.api.AnalyzedClass
 import xsbt.api.{ APIUtil, SameAPI }
 
+import scala.util.Try
+
 /**
  * Implementation of incremental algorithm known as "name hashing". It differs from the default implementation
  * by applying pruning (filter) of member reference dependencies based on used and modified simple names.
@@ -26,14 +28,22 @@ private final class IncrementalNameHashing(log: sbt.util.Logger, options: IncOpt
   }
 
   override protected def sameAPI(className: String, a: AnalyzedClass, b: AnalyzedClass): Option[APIChange] = {
-    if (SameAPI(a, b))
+    val sameAPI = Try { SameAPI(a, b) }.getOrElse {
+      log.debug(s"Hashes are not enough! Same Hash different API for $className")
+      false
+    }
+
+    if (sameAPI)
       None
     else {
       val aNameHashes = a.nameHashes
       val bNameHashes = b.nameHashes
       val modifiedNames = ModifiedNames.compareTwoNameHashes(aNameHashes, bNameHashes)
-      val apiChange = NamesChange(className, modifiedNames)
-      Some(apiChange)
+      if (modifiedNames.implicitNames.isEmpty && modifiedNames.regularNames.isEmpty) None
+      else {
+        val apiChange = NamesChange(className, modifiedNames)
+        Some(apiChange)
+      }
     }
   }
 
