@@ -105,7 +105,7 @@ class TestAnalysisCallback(
     val hasMacro: Boolean = macroClasses.contains(name)
     val (companions, apiHash) = companionsWithHash(name)
     val nameHashes = nameHashesForCompanions(name)
-    val ac = new AnalyzedClass(compilation, name, SafeLazy(companions), apiHash, nameHashes, hasMacro)
+    val ac = new AnalyzedClass(compilation.startTime(), name, SafeLazy(companions), apiHash, nameHashes, hasMacro)
     ac
   }
 
