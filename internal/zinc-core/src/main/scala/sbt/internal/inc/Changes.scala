@@ -9,7 +9,19 @@ import java.io.File
 import xsbti.api.NameHashes
 import xsbti.api.NameHash
 
-final case class InitialChanges(internalSrc: Changes[File], removedProducts: Set[File], binaryDeps: Set[File], external: APIChanges)
+final case class InitialChanges(
+  internalSrc: Changes[File],
+  removedProducts: Set[File],
+  binaryDeps: Set[File],
+  external: APIChanges
+) {
+
+  def isEmpty: Boolean = internalSrc.isEmpty &&
+    removedProducts.isEmpty &&
+    binaryDeps.isEmpty &&
+    external.apiChanges.isEmpty
+}
+
 final class APIChanges(val apiChanges: Iterable[APIChange]) {
   override def toString = "API Changes: " + apiChanges
   def allModified: Iterable[String] = apiChanges.map(_.modifiedClass)
@@ -63,6 +75,8 @@ trait Changes[A] {
   def removed: Set[A]
   def changed: Set[A]
   def unmodified: Set[A]
+
+  def isEmpty = added.isEmpty && removed.isEmpty && changed.isEmpty
 }
 
 sealed abstract class Change(val file: File)

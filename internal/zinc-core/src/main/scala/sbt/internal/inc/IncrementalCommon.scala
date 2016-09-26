@@ -10,7 +10,7 @@ import xsbti.compile.{ CompileAnalysis, DependencyChanges, IncOptions, IncOption
 
 import scala.annotation.tailrec
 
-private[inc] abstract class IncrementalCommon(log: sbt.util.Logger, options: IncOptions) {
+private[inc] abstract class IncrementalCommon(val log: sbt.util.Logger, options: IncOptions) {
 
   // setting the related system property to true will skip checking that the class name
   // still comes from the same classpath entry.  This can workaround bugs in classpath construction,
