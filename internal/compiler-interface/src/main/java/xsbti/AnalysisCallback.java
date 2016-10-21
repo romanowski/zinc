@@ -47,4 +47,8 @@ public interface AnalysisCallback {
      *       Do not depend on it, please.
      */
     boolean nameHashing();
+
+    /** Determines if incremental compilation is enabled.
+      * If returns false, no sbt phases will be introduced in compiler */
+    boolean enabled();
 }
