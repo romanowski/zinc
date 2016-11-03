@@ -45,6 +45,8 @@ class TestCallback(override val nameHashing: Boolean = false) extends AnalysisCa
     ()
   }
   def problem(category: String, pos: xsbti.Position, message: String, severity: xsbti.Severity, reported: Boolean): Unit = ()
+
+  override def enabled(): Boolean = true
 }
 
 object TestCallback {
