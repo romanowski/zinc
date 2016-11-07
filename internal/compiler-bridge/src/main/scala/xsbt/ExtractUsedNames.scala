@@ -115,7 +115,7 @@ class ExtractUsedNames[GlobalType <: CallbackGlobal](val global: GlobalType) ext
     }
 
     private def handleMacroExpansion(original: Tree): Unit = {
-      original.foreach(traverse)
+      traverse(original)
     }
 
     private def handleClassicTreeNode(tree: Tree): Unit = tree match {
@@ -138,7 +138,7 @@ class ExtractUsedNames[GlobalType <: CallbackGlobal](val global: GlobalType) ext
       // to types but that might be a bad thing because it might expand aliases eagerly which
       // not what we need
       case t: TypeTree if t.original != null =>
-        t.original.foreach(traverse)
+        traverse(t.original)
       case t if t.hasSymbolField =>
         addSymbol(t.symbol)
         if (t.tpe != null)
