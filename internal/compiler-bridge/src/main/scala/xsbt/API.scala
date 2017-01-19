@@ -23,7 +23,7 @@ final class API(val global: CallbackGlobal) {
         val start = System.currentTimeMillis
         super.run
         val stop = System.currentTimeMillis
-        debuglog("API phase took : " + ((stop - start) / 1000.0) + " s")
+        inform("API phase took : " + ((stop - start) / 1000.0) + " s")
       }
 
     def apply(unit: global.CompilationUnit): Unit = processUnit(unit)

@@ -6,10 +6,11 @@ package internal
 package inc
 
 import java.io.File
-import scala.util.Try
+
+import scala.util.{ Random, Try }
 import sbt.io.{ Hash, IO }
 import sbt.internal.librarymanagement._
-import sbt.librarymanagement.{ Configurations, ModuleID, ModuleInfo, Resolver, UpdateConfiguration, UpdateLogging, UpdateOptions, ArtifactTypeFilter }
+import sbt.librarymanagement.{ ArtifactTypeFilter, Configurations, ModuleID, ModuleInfo, Resolver, UpdateConfiguration, UpdateLogging, UpdateOptions }
 import sbt.util.Logger
 import sbt.internal.util.{ BufferedLogger, CacheStore, FullLogger }
 
@@ -56,7 +57,8 @@ private[inc] class IvyComponentCompiler(compiler: RawCompiler, manager: Componen
 
   def apply(): File = {
     // binID is of the form "org.example-compilerbridge-1.0.0-bin_2.11.7__50.0"
-    val binID = binaryID(s"${sourcesModule.organization}-${sourcesModule.name}-${sourcesModule.revision}")
+    val snapshotPart = if (sourcesModule.isChanging) Random.nextInt(100000).toString else ""
+    val binID = binaryID(s"${sourcesModule.organization}-${sourcesModule.name}-${sourcesModule.revision}-$snapshotPart")
     manager.file(binID)(new IfMissing.Define(true, compileAndInstall(binID)))
   }
 

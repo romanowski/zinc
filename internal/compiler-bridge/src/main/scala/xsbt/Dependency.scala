@@ -36,6 +36,15 @@ final class Dependency(val global: CallbackGlobal) extends LocateClassFile with 
   private class DependencyPhase(prev: Phase) extends GlobalPhase(prev) {
     override def description = "Extracts dependency information"
     def name = Dependency.name
+
+    override def run(): Unit =
+      {
+        val start = System.currentTimeMillis
+        super.run
+        val stop = System.currentTimeMillis
+        inform("Dependency phase took : " + ((stop - start) / 1000.0) + " s")
+      }
+
     def apply(unit: CompilationUnit): Unit = {
       if (!unit.isJava) {
         // build dependencies structure
