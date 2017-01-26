@@ -91,7 +91,7 @@ class TestAnalysisCallback(
       case (rel, (sourceClassName, names)) => rel ++ (names map (n => (sourceClassName, n)))
     }
 
-    val relations = Relations.construct(true, p :: bin :: di :: de :: pii :: pie :: mri :: mre :: ii :: ie :: cn :: un :: bcn :: Nil)
+    val relations = Relations.empty
 
     val analyzedApis = classNames.values.flatMap(_.map(_._1)).map(analyzeClass)
 
@@ -105,7 +105,7 @@ class TestAnalysisCallback(
     val hasMacro: Boolean = macroClasses.contains(name)
     val (companions, apiHash) = companionsWithHash(name)
     val nameHashes = nameHashesForCompanions(name)
-    val ac = new AnalyzedClass(compilation, name, SafeLazy(companions), apiHash, nameHashes, hasMacro)
+    val ac = new AnalyzedClass(compilation.startTime(), name, SafeLazy(companions), apiHash, nameHashes, hasMacro)
     ac
   }
 
@@ -176,4 +176,6 @@ class TestAnalysisCallback(
   }
 
   def problem(category: String, pos: xsbti.Position, message: String, severity: xsbti.Severity, reported: Boolean): Unit = ()
+
+  override def enabled() = true
 }

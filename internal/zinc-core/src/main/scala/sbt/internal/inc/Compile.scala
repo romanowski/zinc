@@ -237,6 +237,8 @@ private final class AnalysisCallback(
 
   def nameHashing: Boolean = options.nameHashing
 
+  override def enabled(): Boolean = options.enabled
+
   def get: Analysis =
     addUsedNames(addCompilation(addProductsAndDeps(Analysis.empty(nameHashing = nameHashing))))
 
@@ -274,7 +276,7 @@ private final class AnalysisCallback(
     val hasMacro: Boolean = macroClasses.contains(name)
     val (companions, apiHash) = companionsWithHash(name)
     val nameHashes = nameHashesForCompanions(name)
-    val ac = new AnalyzedClass(compilation, name, SafeLazy(companions), apiHash, nameHashes, hasMacro)
+    val ac = new AnalyzedClass(compilation.startTime(), name, SafeLazy(companions), apiHash, nameHashes, hasMacro)
     ac
   }
 

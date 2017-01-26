@@ -72,8 +72,9 @@ object Incremental {
         def isEmpty = modifiedBinaries.isEmpty && modifiedClasses.isEmpty
       }
       val (initialInvClasses, initialInvSources) = incremental.invalidateInitial(previous.relations, initialChanges)
-      log.debug("All initially invalidated classes: " + initialInvClasses + "\n" +
-        "All initially invalidated sources:" + initialInvSources + "\n")
+      if (initialInvClasses.nonEmpty || initialInvSources.nonEmpty)
+        incremental.log.debug("All initially invalidated classes: " + initialInvClasses + "\n" +
+          "All initially invalidated sources:" + initialInvSources + "\n")
       val analysis = manageClassfiles(options) { classfileManager =>
         incremental.cycle(initialInvClasses, initialInvSources, sources, binaryChanges, lookup, previous,
           doCompile(compile, callbackBuilder, classfileManager), classfileManager, 1)

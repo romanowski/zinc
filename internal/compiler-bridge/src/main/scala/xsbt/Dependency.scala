@@ -136,13 +136,13 @@ final class Dependency(val global: CallbackGlobal) extends LocateClassFile with 
         (fromNonLocalClass, fromClass != fromNonLocalClass)
       }
     }
-    private def addClassDependency(deps: HashSet[ClassDependency], fromClass: Symbol, dep: Symbol): Unit = {
+    private def addClassDependency(deps: HashSet[ClassDependency], fromClass: Symbol, dep: Symbol): Unit = if (dep != NoSymbol) {
       assert(
         fromClass.isClass,
         s"The ${fromClass.fullName} defined at ${fromClass.fullLocationString} is not a class symbol."
       )
       val depClass = enclOrModuleClass(dep)
-      if (fromClass.associatedFile != depClass.associatedFile) {
+      if (fromClass.associatedFile != depClass.associatedFile && !depClass.isRefinementClass) {
         deps += ClassDependency(fromClass, depClass)
         ()
       }
