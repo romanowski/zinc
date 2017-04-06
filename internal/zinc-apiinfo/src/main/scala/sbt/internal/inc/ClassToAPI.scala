@@ -102,7 +102,7 @@ object ClassToAPI {
     lazy val cf = classFileForClass(c)
     val methods = mergeMap(c, c.getDeclaredMethods, c.getMethods, methodToDef(enclPkg))
     val fields = mergeMap(c, c.getDeclaredFields, c.getFields, fieldToDef(c, cf, enclPkg))
-    val constructors = mergeMap(c, c.getDeclaredConstructors, c.getConstructors, constructorToDef(enclPkg))
+    val constructors = mergeMap(c, c.getDeclaredConstructors, c.getConstructors, constructorToDef(enclPkg, c))
     val classes = merge[Class[_]](c, c.getDeclaredClasses, c.getClasses, toDefinitions(cmap), (_: Seq[Class[_]]).partition(isStatic), _.getEnclosingClass != c)
     val all = methods ++ fields ++ constructors ++ classes
     val parentJavaTypes = allSuperTypes(c)
@@ -218,8 +218,11 @@ object ClassToAPI {
   def methodToDef(enclPkg: Option[String])(m: Method): api.Def =
     defLike(m.getName, m.getModifiers, m.getDeclaredAnnotations, typeParameterTypes(m), m.getParameterAnnotations, parameterTypes(m), Option(returnType(m)), exceptionTypes(m), m.isVarArgs, enclPkg)
 
-  def constructorToDef(enclPkg: Option[String])(c: Constructor[_]): api.Def =
-    defLike("<init>", c.getModifiers, c.getDeclaredAnnotations, typeParameterTypes(c), c.getParameterAnnotations, parameterTypes(c), None, exceptionTypes(c), c.isVarArgs, enclPkg)
+  def constructorToDef(enclPkg: Option[String], enclClass: Class[_])(c: Constructor[_]): api.Def =
+    defLike(
+      s"${name(c).replace('.', ';')};init;", // Use the format defined in xsbt.ClassName.constructorName documentation
+      c.getModifiers, c.getDeclaredAnnotations, typeParameterTypes(c), c.getParameterAnnotations, parameterTypes(c), None, exceptionTypes(c), c.isVarArgs, enclPkg
+    )
 
   def defLike[T <: GenericDeclaration](name: String, mods: Int, annots: Array[Annotation], tps: Array[TypeVariable[T]], paramAnnots: Array[Array[Annotation]], paramTypes: Array[Type], retType: Option[Type], exceptions: Array[Type], varArgs: Boolean, enclPkg: Option[String]): api.Def =
     {
