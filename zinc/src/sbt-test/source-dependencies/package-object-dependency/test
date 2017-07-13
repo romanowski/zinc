@@ -1,0 +1,24 @@
+> compile
+> checkIterations 1
+
+$ copy-file changes/BaseV2.scala Base.scala
+> compile
+> checkIterations 3
+
+# Base.scala, the source file dependent on it (Middle.scala), and package.scala should be recompiled.
+> checkRecompilations 1 a.d.Base
+> checkRecompilations 2 a.b.c.Middle a.b.c.Middle.InnerTrait a.b.c.Middle.Inner a.b.PackageParent a.b.pkg.package
+
+# Change the package object to don't depend on Middle.scala anymore
+$ copy-file changes/packageV2.scala package.scala
+> compile
+> checkIterations 4
+> checkRecompilations 3 a.b.PackageParent a.b.pkg.package
+
+$ copy-file changes/BaseV3.scala Base.scala
+> compile
+> checkIterations 6
+# Base.scala and the source file dependent on it (Middle.scala) should be recompiled.
+# The package object wasn't recompiled this time.
+> checkRecompilations 4 a.d.Base
+> checkRecompilations 5 a.b.c.Middle a.b.c.Middle.InnerTrait a.b.c.Middle.Inner

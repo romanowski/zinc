@@ -110,7 +110,8 @@ private[inc] abstract class IncrementalCommon(val log: sbt.util.Logger, options:
                                      doCompile: (Set[File], DependencyChanges) => Analysis,
                                      classfileManager: ClassFileManager): (Analysis, Set[File]) = {
     val invalidatedSources = classes.flatMap(previous.relations.definesClass) ++ modifiedSrcs
-    val invalidatedSourcesForCompilation = expand(invalidatedSources, allSources)
+    val extraPackageObjectSources = extraPackageObjectSourcesToInvalidate(previous, invalidatedSources)
+    val invalidatedSourcesForCompilation = expand(invalidatedSources ++ extraPackageObjectSources, allSources)
     val pruned = Incremental.prune(invalidatedSourcesForCompilation, previous, classfileManager)
     debug("********* Pruned: \n" + pruned.relations + "\n*********")
 
@@ -501,5 +502,32 @@ private[inc] abstract class IncrementalCommon(val log: sbt.util.Logger, options:
       all(start, dependencies(start))
     }
     xs.toSet
+  }
+
+  /**
+   * Finds source files of package objects for which sources of package object's dependencies will be recompiled.
+   * Sometimes it's needed even though these dependencies themselves were not marked directly as invalidated but e.g.
+   * their inner classes were.
+   */
+  private def extraPackageObjectSourcesToInvalidate(previous: Analysis, invalidatedSources: Set[File]): Set[File] = {
+    if (invalidatedSources.isEmpty) Set.empty
+    else {
+      val extraPkgObjSourcesToInvalidate: Set[File] = (for {
+        (source, classesInSource) <- previous.relations.classes.forwardMap
+        pkgObj <- classesInSource if pkgObj.endsWith(".package")
+        pkgObjSourceAlreadyInvalidated = invalidatedSources.contains(source)
+        if !pkgObjSourceAlreadyInvalidated && hasSourceOfInternalDependencyInvalidated(pkgObj, previous, invalidatedSources)
+      } yield source)(collection.breakOut)
+      log.debug(s"Additional invalidated package objects sources: $extraPkgObjSourcesToInvalidate")
+      extraPkgObjSourcesToInvalidate
+    }
+  }
+
+  private def hasSourceOfInternalDependencyInvalidated(pkgObj: String, previous: Analysis, invalidatedSources: Set[File]): Boolean = {
+    val dependencies = previous.relations.internalClassDeps(pkgObj)
+    dependencies.exists { dep =>
+      val depSources = previous.relations.definesClass(dep)
+      depSources.exists(invalidatedSources.contains)
+    }
   }
 }
