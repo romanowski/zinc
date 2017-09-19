@@ -221,12 +221,17 @@ final class IncHandler(directory: File, scriptedLog: Logger) extends BridgeProvi
         Maybe.just(new xsbti.compile.TransactionalManagerType(targetDir / "classes.bak", sbt.util.Logger.Null))
       // you can't specify class file manager in the properties files so let's overwrite it to be the transactional
       // one (that's the default for sbt)
-      val incOptions = loadIncOptions(directory / "incOptions.properties").withClassfileManagerType(transactional)
+      val props = propertiesAsMap(directory / "incOptions.properties")
+      import collection.JavaConverters._
+      val incOptions = props.map(map => IncOptionsUtil.fromStringMap(map.asJava))
+        .getOrElse(IncOptionsUtil.defaultIncOptions)
+        .withClassfileManagerType(transactional)
       val reporter = new LoggerReporter(maxErrors, scriptedLog, identity)
       val extra = Array(t2(("key", "value")))
       val setup = compiler.setup(lookup, skip = false, cacheFile, CompilerCache.fresh, incOptions, reporter, None, extra)
       val classpath = (i.si.allJars.toList ++ unmanagedJars :+ classesDir).toArray
-      val in = compiler.inputs(classpath, sources.toArray, classesDir, Array(), Array(), maxErrors, Array(),
+      val scalacOptions = props.flatMap(_.get("scalac.options").map(_.split(" "))).getOrElse(Array.empty)
+      val in = compiler.inputs(classpath, sources.toArray, classesDir, scalacOptions, Array(), maxErrors, Array(),
         CompileOrder.Mixed, cs, setup, prev)
       val result = compiler.compile(in, scriptedLog)
       val analysis = result.analysis match { case a: Analysis => a }
@@ -308,15 +313,13 @@ final class IncHandler(directory: File, scriptedLog: Logger) extends BridgeProvi
     finally { currentThread.setContextClassLoader(oldLoader) }
   }
 
-  private def loadIncOptions(src: File): IncOptions = {
+  private def propertiesAsMap(src: File): Option[Map[String, String]] = {
     if (src.exists) {
       import collection.JavaConversions._
       val properties = new Properties()
       properties.load(new FileInputStream(src))
-      val map = new java.util.HashMap[String, String]
-      properties foreach { case (k: String, v: String) => map.put(k, v) }
-      IncOptionsUtil.fromStringMap(map)
-    } else IncOptionsUtil.defaultIncOptions
+      Some(properties.toMap)
+    } else None
   }
 
   private def getProblems(): Seq[Problem] =

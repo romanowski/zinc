@@ -1,21 +1,24 @@
-Zinc
+Pref benchmark - Zinc tunig
 ====
 
-Zinc is an incremental compilation module of sbt with the sbt-agnostic API.
+This workshop contains 2 parts:
+ * Fix actual peromance problem inside zinc compiler
+ * Optimize further classes in xsbt package from compilerBridge project
 
-Zinc has been spawned with this command executed in sbt's repo:
+## Setup
 
-```
-$ git filter-branch --index-filter 'git rm --cached -qr -- . && git reset -q $GIT_COMMIT -- compile interface util/classfile util/classpath util/datatype util/relation' --prune-empty
-```
+In order to setup workshop please clone this branch and run `short-test` (first one will be really long due to downloading all reqiired deps).
 
-Status
-------
+## How can I run things?
 
-The zinc project that lives under "sbt" organization is a successor to [`typesafehub/zinc`](https://github.com/typesafehub/zinc). The intent is to polish this project and retire zinc living under typesafehub. Check [#80](https://github.com/sbt/zinc/issues/80) for more information.
+There are two sbt aliases provided to run benchmarks:
+ * short-test - useful mostly during first part since it is close to minimal reproduction of problem.
+ It should take less then 30 sec to finish
+ * long-test - design mostly for second part contains bigger project compilation (core shapeless on jvm).
+
+## Tools
+
+For both parts visualvm provided with jdk should be sufficient however some form of test editor with debugger will be usefull (e.g. Intellij).
+Since visualvm is not that powerful in terms of functionaly, I suggest using yourkit (my preference) or jprofiler (both has trial periods).
 
 
-License
--------
-
-See [LICENSE].

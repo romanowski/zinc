@@ -56,7 +56,7 @@ private[inc] class IvyComponentCompiler(compiler: RawCompiler, manager: Componen
 
   def apply(): File = {
     // binID is of the form "org.example-compilerbridge-1.0.0-bin_2.11.7__50.0"
-    val binID = binaryID(s"${sourcesModule.organization}-${sourcesModule.name}-${sourcesModule.revision}")
+    val binID = binaryID(s"${sourcesModule.organization}-${sourcesModule.name}-${sourcesModule.revision}-${System.currentTimeMillis()}")
     manager.file(binID)(new IfMissing.Define(true, compileAndInstall(binID)))
   }
 

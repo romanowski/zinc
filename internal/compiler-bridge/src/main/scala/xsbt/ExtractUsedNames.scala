@@ -68,11 +68,9 @@ class ExtractUsedNames[GlobalType <: CallbackGlobal](val global: GlobalType) ext
   }
 
   private def firstClassOrModuleDef(tree: Tree): Option[Tree] = {
-    tree foreach {
-      case t @ ((_: ClassDef) | (_: ModuleDef)) => return Some(t)
-      case _                                    => ()
-    }
-    None
+    tree.collect {
+      case t @ ((_: ClassDef) | (_: ModuleDef)) => t
+    }.headOption
   }
 
   private class ExtractUsedNamesTraverser extends Traverser {
@@ -86,10 +84,11 @@ class ExtractUsedNames[GlobalType <: CallbackGlobal](val global: GlobalType) ext
      *     https://github.com/sbt/sbt/issues/1237
      *     https://github.com/sbt/sbt/issues/1544
      */
-    private val inspectedOriginalTrees = collection.mutable.Set.empty[Tree]
+    private var inspectedOriginalTrees = collection.Seq.empty[Tree]
 
     override def traverse(tree: Tree): Unit = tree match {
-      case MacroExpansionOf(original) if inspectedOriginalTrees.add(original) =>
+      case MacroExpansionOf(original) if !inspectedOriginalTrees.contains(original) =>
+        inspectedOriginalTrees :+= original
         handleClassicTreeNode(tree)
         handleMacroExpansion(original)
         super.traverse(tree)
@@ -104,6 +103,7 @@ class ExtractUsedNames[GlobalType <: CallbackGlobal](val global: GlobalType) ext
 
     private def addName(name: Name, enclosingNonLocalClass: Symbol = resolveEnclosingNonLocalClass): Unit = {
       val nameAsString = name.decode.trim
+      val className = ExtractUsedNames.this.className(enclosingNonLocalClass)
       if (enclosingNonLocalClass == NoSymbol || enclosingNonLocalClass.hasPackageFlag) {
         namesUsedAtTopLevel += nameAsString
         ()
@@ -141,8 +141,13 @@ class ExtractUsedNames[GlobalType <: CallbackGlobal](val global: GlobalType) ext
         t.original.foreach(traverse)
       case t if t.hasSymbolField =>
         addSymbol(t.symbol)
-        if (t.tpe != null)
-          symbolsInType(t.tpe).foreach(addSymbol)
+        if (t.tpe != null) {
+          val symbols = symbolsInType(t.tpe).collect {
+            case s =>
+              addSymbol(s)
+              s
+          }
+        }
       case _ =>
     }
 

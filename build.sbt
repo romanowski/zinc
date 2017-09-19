@@ -350,3 +350,7 @@ def customCommands: Seq[Setting[_]] = Seq(
   }
 )
 
+
+addCommandAlias("short-test", "scripted profiling/short-test")
+
+addCommandAlias("long-test", "scripted profiling/long-test")
